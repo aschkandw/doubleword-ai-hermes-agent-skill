@@ -8,20 +8,18 @@ for cost-aware inference across realtime, async, and 24-hour batch tiers.
 ## Structure
 
 ```text
-skills/
-  doubleword/
-    SKILL.md
-    references/
-      cli-recipes.md
-      models-and-pricing.md
+SKILL.md
+references/
+  cli-recipes.md
+  models-and-pricing.md
 ```
 
-The main skill file is intentionally concise for progressive disclosure:
+This repository is a single-skill package, so `SKILL.md` lives at the repository
+root. The main skill file is intentionally concise for progressive disclosure:
 
 - Level 0: skill list metadata from `SKILL.md`
-- Level 1: full operating procedure in `skills/doubleword/SKILL.md`
-- Level 2: detailed command and model references under
-  `skills/doubleword/references/`
+- Level 1: full operating procedure in `SKILL.md`
+- Level 2: detailed command and model references under `references/`
 
 References are included because model/pricing tables and command recipes are
 large, detail-heavy, and more likely to change than the core skill procedure.
