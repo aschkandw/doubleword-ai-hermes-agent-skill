@@ -4,6 +4,12 @@ Use this reference when executing Doubleword commands, validating payloads,
 submitting jobs, retrieving results, resuming interrupted downloads, or using
 the OpenAI-compatible SDK.
 
+Official command reference:
+`https://doublewordai.github.io/dw/commands.html`
+
+Run `dw --help` or `dw <group> --help` for exact options in the installed CLI
+version.
+
 ## Readiness Checks
 
 Confirm the API key is present without printing it:
@@ -21,6 +27,29 @@ dw whoami
 If `dw whoami` fails, do not upload data. Check whether the Doubleword CLI is
 installed and whether `DOUBLEWORD_API_KEY` is available in the shell context.
 
+Useful auth/account commands:
+
+```bash
+dw login --api-key <key>
+dw account current
+dw account list
+dw account switch <account>
+```
+
+Do not run key-management commands such as `dw keys create` or
+`dw keys delete` unless the user explicitly asks.
+
+## Model Discovery
+
+Use the installed CLI to verify available model names and details:
+
+```bash
+dw models list
+dw models list --type chat
+dw models list --type embeddings
+dw models get <model>
+```
+
 ## JSONL Validation
 
 Validate every generated batch payload before upload:
@@ -31,6 +60,19 @@ dw files stats path/to/dataset.jsonl
 ```
 
 Fix validation errors locally and rerun validation before submitting.
+
+Other local file helpers:
+
+```bash
+dw files prepare path/to/input.jsonl
+dw files sample path/to/dataset.jsonl -n <count>
+dw files split path/to/dataset.jsonl
+dw files merge <FILES...>
+dw files diff expected.jsonl actual.jsonl
+```
+
+Use `dw files cost-estimate <file_id>` after upload when the user needs a cost
+estimate before creating a batch.
 
 ## Mode Commands
 
@@ -51,6 +93,11 @@ Batch, for lowest-cost large jobs:
 ```bash
 dw stream path/to/dataset.jsonl --completion-window 24h
 ```
+
+`dw stream` uploads, creates a batch, watches progress, and pipes results. Use
+it only when active streaming is appropriate. For Hermes background work, prefer
+explicit upload and batch creation so the agent can stop waiting after it has
+reported the batch ID.
 
 ## Explicit Batch Creation
 
@@ -75,6 +122,15 @@ Create a 24h Batch job:
 dw batches create --file <file_id> --completion-window 24h
 ```
 
+One-step upload and create is also available:
+
+```bash
+dw batches run path/to/dataset.jsonl
+```
+
+Avoid `dw batches run --watch` for long background jobs in Hermes because it
+keeps the agent actively waiting.
+
 ## Status and Results
 
 Check status with a discrete command:
@@ -88,6 +144,17 @@ Download results:
 ```bash
 dw batches results <batch_id> -o results.jsonl
 ```
+
+For multiple completed batches:
+
+```bash
+dw batches results <IDS...> -o results.jsonl
+dw batches analytics <IDS...>
+```
+
+Use `dw batches retry <batch_id>` only when failed requests should be retried.
+Use `dw batches cancel <batch_id>` only when the user explicitly asks to cancel
+or the submitted job is clearly wrong and cancellation is safe.
 
 Check the downloaded output shape:
 
@@ -113,6 +180,13 @@ while true; do
   dw batches get <batch_id>
   sleep 60
 done
+```
+
+Also avoid long-running watch commands for background jobs:
+
+```bash
+dw batches watch <batch_id>
+dw batches run path/to/dataset.jsonl --watch
 ```
 
 ## Resuming Interrupted Downloads

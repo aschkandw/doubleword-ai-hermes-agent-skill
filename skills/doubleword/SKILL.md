@@ -31,7 +31,8 @@ Load references only when needed:
 - `references/models-and-pricing.md` for model choice, cost comparison, and
   task-specific model tables.
 - `references/cli-recipes.md` for exact validation, submission, status,
-  retrieval, resume, and SDK fallback commands.
+  retrieval, resume, SDK fallback commands, and the official Doubleword command
+  reference link.
 
 ## Procedure
 
