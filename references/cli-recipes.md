@@ -18,14 +18,43 @@ Confirm the API key is present without printing it:
 test -n "$DOUBLEWORD_API_KEY"
 ```
 
-Verify the authenticated CLI identity:
+Use the strongest readiness check available for the login mode.
+
+For browser login, verify the authenticated CLI identity and active
+organization before uploading data:
 
 ```bash
 dw whoami
 ```
 
-If `dw whoami` fails, do not upload data. Check whether the Doubleword CLI is
-installed and whether `DOUBLEWORD_API_KEY` is available in the shell context.
+If `dw whoami` fails after browser login, do not upload data. Check whether the
+Doubleword CLI is installed, whether `DOUBLEWORD_API_KEY` is available in the
+shell context, and whether the active account or organization is correct.
+
+For headless/API-key login, `dw whoami` may fail because API-key login stores
+only the inference key and does not enable admin API commands. In that mode,
+validate the payload locally and run a cheap, non-interactive realtime
+inference probe before uploading or submitting jobs:
+
+The readiness probe defaults to `openai/gpt-oss-20b`, the lowest-cost available
+realtime model; set `MODEL` first to override it.
+
+```bash
+MODEL="${MODEL:-openai/gpt-oss-20b}"
+dw files validate path/to/dataset.jsonl
+dw files stats path/to/dataset.jsonl
+dw realtime "$MODEL" "Reply with OK." --temperature 0 --max-tokens 2 --no-stream
+```
+
+Treat the local file commands as payload checks, not authentication checks. The
+minimal realtime request is the authentication probe because it proves the
+inference key works against Doubleword. Always pass a prompt argument or pipe a
+tiny prompt so the probe cannot block waiting for input:
+
+```bash
+MODEL="${MODEL:-openai/gpt-oss-20b}"
+printf 'Reply with OK.\n' | dw realtime "$MODEL" --temperature 0 --max-tokens 2 --no-stream
+```
 
 Useful auth/account commands:
 
@@ -47,7 +76,8 @@ Use the installed CLI to verify available model names and details:
 dw models list
 dw models list --type chat
 dw models list --type embeddings
-dw models get <model>
+: "${MODEL:?set MODEL to the model to inspect}"
+dw models get "$MODEL"
 ```
 
 ## JSONL Validation
@@ -79,7 +109,8 @@ estimate before creating a batch.
 Realtime, for immediate single-request use:
 
 ```bash
-dw realtime <model>
+: "${MODEL:?set MODEL to the selected chat model}"
+dw realtime "$MODEL"
 ```
 
 Async, for same-session background jobs:

@@ -23,11 +23,18 @@ environment as:
 export DOUBLEWORD_API_KEY="your_api_key_here"
 ```
 
-The skill verifies authentication with:
+The skill supports two authentication readiness paths. With browser login, it
+verifies identity and organization with:
 
 ```bash
 dw whoami
 ```
+
+For headless/API-key login, `dw whoami` may fail because API-key credentials do
+not include admin API access. In that mode, the skill validates JSONL payloads
+locally and uses a non-interactive, token-limited realtime request, such as
+`MODEL="${MODEL:-openai/gpt-oss-20b}"; dw realtime "$MODEL" "Reply with OK." --temperature 0 --max-tokens 2 --no-stream`,
+as the inference-authentication probe before uploading or submitting jobs.
 
 ## What This Skill Does
 

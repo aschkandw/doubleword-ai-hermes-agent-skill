@@ -38,8 +38,13 @@ Load references only when needed:
 
 1. Check local readiness before remote work:
    - confirm `DOUBLEWORD_API_KEY` is set;
-   - run `dw whoami` before uploading any file;
-   - stop if identity verification fails.
+   - with browser login, run `dw whoami` before uploading any file and stop if
+     identity or organization verification fails;
+   - with headless/API-key login, `dw whoami` may fail because it requires the
+     admin API; instead, run local file validation plus a non-interactive,
+     token-limited realtime probe such as
+     `MODEL="${MODEL:-openai/gpt-oss-20b}"; dw realtime "$MODEL" "Reply with OK." --temperature 0 --max-tokens 2 --no-stream`
+     before upload and stop if the inference probe fails.
 2. Classify the task:
    - Realtime: single prompt, interactive lookup, or explicit immediate result.
    - Async: background work needed in the current session, medium datasets, or
@@ -94,7 +99,9 @@ For realtime jobs:
 
 For Async or Batch jobs:
 
-- `dw whoami` succeeded before upload;
+- either `dw whoami` succeeded before upload, or a headless/API-key readiness
+  path succeeded with local file validation and a non-interactive,
+  token-limited realtime inference probe;
 - `dw files validate` and `dw files stats` succeeded for every uploaded JSONL
   shard;
 - the user receives the selected mode, selected model, batch ID, source file or
