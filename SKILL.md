@@ -43,7 +43,7 @@ Load references only when needed:
    - with headless/API-key login, `dw whoami` may fail because it requires the
      admin API; instead, run local file validation plus a non-interactive,
      token-limited realtime probe such as
-     `dw realtime <model> "Reply with OK." --temperature 0 --max-tokens 2 --no-stream`
+     `: "${MODEL:?set MODEL to the selected chat model}"; dw realtime "$MODEL" "Reply with OK." --temperature 0 --max-tokens 2 --no-stream`
      before upload and stop if the inference probe fails.
 2. Classify the task:
    - Realtime: single prompt, interactive lookup, or explicit immediate result.

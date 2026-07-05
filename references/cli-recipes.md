@@ -37,9 +37,10 @@ validate the payload locally and run a cheap, non-interactive realtime
 inference probe before uploading or submitting jobs:
 
 ```bash
+: "${MODEL:?set MODEL to the selected chat model}"
 dw files validate path/to/dataset.jsonl
 dw files stats path/to/dataset.jsonl
-dw realtime <model> "Reply with OK." --temperature 0 --max-tokens 2 --no-stream
+dw realtime "$MODEL" "Reply with OK." --temperature 0 --max-tokens 2 --no-stream
 ```
 
 Treat the local file commands as payload checks, not authentication checks. The
@@ -48,7 +49,8 @@ inference key works against Doubleword. Always pass a prompt argument or pipe a
 tiny prompt so the probe cannot block waiting for input:
 
 ```bash
-printf 'Reply with OK.\n' | dw realtime <model> --temperature 0 --max-tokens 2 --no-stream
+: "${MODEL:?set MODEL to the selected chat model}"
+printf 'Reply with OK.\n' | dw realtime "$MODEL" --temperature 0 --max-tokens 2 --no-stream
 ```
 
 Useful auth/account commands:
@@ -71,7 +73,8 @@ Use the installed CLI to verify available model names and details:
 dw models list
 dw models list --type chat
 dw models list --type embeddings
-dw models get <model>
+: "${MODEL:?set MODEL to the model to inspect}"
+dw models get "$MODEL"
 ```
 
 ## JSONL Validation
@@ -103,7 +106,8 @@ estimate before creating a batch.
 Realtime, for immediate single-request use:
 
 ```bash
-dw realtime <model>
+: "${MODEL:?set MODEL to the selected chat model}"
+dw realtime "$MODEL"
 ```
 
 Async, for same-session background jobs:
