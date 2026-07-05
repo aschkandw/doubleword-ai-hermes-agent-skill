@@ -32,8 +32,9 @@ dw whoami
 
 For headless/API-key login, `dw whoami` may fail because API-key credentials do
 not include admin API access. In that mode, the skill validates JSONL payloads
-locally and uses a minimal realtime request as the inference-authentication
-probe before uploading or submitting jobs.
+locally and uses a non-interactive, token-limited realtime request, such as
+`dw realtime <model> "Reply with OK." --temperature 0 --max-tokens 2 --no-stream`,
+as the inference-authentication probe before uploading or submitting jobs.
 
 ## What This Skill Does
 

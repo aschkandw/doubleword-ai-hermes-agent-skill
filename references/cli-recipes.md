@@ -33,18 +33,23 @@ shell context, and whether the active account or organization is correct.
 
 For headless/API-key login, `dw whoami` may fail because API-key login stores
 only the inference key and does not enable admin API commands. In that mode,
-validate the payload locally and run a cheap realtime inference probe before
-uploading or submitting jobs:
+validate the payload locally and run a cheap, non-interactive realtime
+inference probe before uploading or submitting jobs:
 
 ```bash
 dw files validate path/to/dataset.jsonl
 dw files stats path/to/dataset.jsonl
-dw realtime <model>
+dw realtime <model> "Reply with OK." --temperature 0 --max-tokens 2 --no-stream
 ```
 
 Treat the local file commands as payload checks, not authentication checks. The
 minimal realtime request is the authentication probe because it proves the
-inference key works against Doubleword.
+inference key works against Doubleword. Always pass a prompt argument or pipe a
+tiny prompt so the probe cannot block waiting for input:
+
+```bash
+printf 'Reply with OK.\n' | dw realtime <model> --temperature 0 --max-tokens 2 --no-stream
+```
 
 Useful auth/account commands:
 
