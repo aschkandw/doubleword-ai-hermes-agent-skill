@@ -18,14 +18,33 @@ Confirm the API key is present without printing it:
 test -n "$DOUBLEWORD_API_KEY"
 ```
 
-Verify the authenticated CLI identity:
+Use the strongest readiness check available for the login mode.
+
+For browser login, verify the authenticated CLI identity and active
+organization before uploading data:
 
 ```bash
 dw whoami
 ```
 
-If `dw whoami` fails, do not upload data. Check whether the Doubleword CLI is
-installed and whether `DOUBLEWORD_API_KEY` is available in the shell context.
+If `dw whoami` fails after browser login, do not upload data. Check whether the
+Doubleword CLI is installed, whether `DOUBLEWORD_API_KEY` is available in the
+shell context, and whether the active account or organization is correct.
+
+For headless/API-key login, `dw whoami` may fail because API-key login stores
+only the inference key and does not enable admin API commands. In that mode,
+validate the payload locally and run a cheap realtime inference probe before
+uploading or submitting jobs:
+
+```bash
+dw files validate path/to/dataset.jsonl
+dw files stats path/to/dataset.jsonl
+dw realtime <model>
+```
+
+Treat the local file commands as payload checks, not authentication checks. The
+minimal realtime request is the authentication probe because it proves the
+inference key works against Doubleword.
 
 Useful auth/account commands:
 
